@@ -6,12 +6,7 @@ import java.util.Scanner;
 
 public class A1 {
 
-/**
- * Patient Management System
- * A console-based Java application for storing and managing patient records
- * using an ArrayList as the underlying data structure.
-     * @param args
- */
+
  
     public static void main(String[] args) {
         PatientManager manager = new PatientManager();
@@ -42,7 +37,7 @@ class Patient {
         this.type = category;
     }
  
-    // ----- Getters -----
+    // getr
     public int getId() { return id; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
@@ -51,7 +46,7 @@ class Patient {
     public String getMedicalCondition() { return medicalCondition; }
     public String getCategory() { return type; }
  
-    // ----- Setters -----
+    // setr
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
     public void setAge(int age) { this.age = age; }
@@ -62,7 +57,9 @@ class Patient {
     @Override
     public String toString() {
         return String.format(
-            "%-6d %-12s %-12s %-4d %-8s %-20s %-12s",
+            "%-6d %-12s %-12s %-4d %-8s %-20s %-12s", 
+                // W3schools:java String format() Method
+                //https://www.w3schools.com/java/ref_string_format.asp
             id, firstName, lastName, age, gender, medicalCondition, type
         );
     }
@@ -74,7 +71,7 @@ class Patient {
 class PatientManager {
     private final ArrayList<Patient> patients = new ArrayList<>();
   Scanner kb = new Scanner(System.in);
-    private int nextId = 1; // auto-incrementing patient ID
+    private int nextId = 1; // patient Id (+1)
  
     public void run() {
         boolean running = true;
@@ -252,11 +249,11 @@ class PatientManager {
  
   
     // Helper methods
- 
+    //display for patient info
     private void printTableHeader() {
         System.out.printf("%-6s %-12s %-12s %-4s %-8s %-20s %-12s%n",
                 "ID", "FirstName", "LastName", "Age", "Gender", "Condition", "Category");
-        System.out.println("---------------------------------------------------------------------------");
+        System.out.println("-".repeat(30));
     }
  
     private Patient findPatientById(int id) {
