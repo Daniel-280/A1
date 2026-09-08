@@ -21,7 +21,10 @@ public class WardManager {
         }
         }
     
+//bro code: java 2D arrays: 
+    //https://www.youtube.com/watch?v=alwukGslBG8
 
+    
     /** Returns the first available bed, or null if the ward is full. */
     private Bed findFirstAvailableBed() {
         for (int r = 0; r < ROWS; r++) {
