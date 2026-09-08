@@ -1,5 +1,6 @@
-com\mycompany\a1\PatientManager.class
-com\mycompany\a1\Patient.class
-com\mycompany\a1\WardManager.class
-com\mycompany\a1\A1.class
-com\mycompany\a1\Bed.class
+com\mycompany\a1_2\Bed.class
+com\mycompany\a1_2\report.class
+com\mycompany\a1_2\WardManager.class
+com\mycompany\a1_2\A1_2.class
+com\mycompany\a1_2\PatientManager.class
+com\mycompany\a1_2\Patient.class
