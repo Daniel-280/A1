@@ -110,31 +110,41 @@ class WardManager {
     private static final int COLS = 5;
     private static final int TOTAL_BEDS = ROWS * COLS;
 
-    private final ArrayList<Bed> beds = new ArrayList<>();
+    private final Bed[][] beds= new Bed[ROWS][COLS];
 
     public WardManager() {
-        for (int i = 1; i <= TOTAL_BEDS; i++) {
-            beds.add(new Bed(i));
+       int bedNumber = 1;
+        for (int r=0 ; r < ROWS; r++) {
+            for (int c = 0; c < COLS; c++) {
+                beds[r][c] = new Bed(bedNumber);
+                bedNumber++;
+            }
+            
         }
-    }
+        }
+    
 
     /** Returns the first available bed, or null if the ward is full. */
     private Bed findFirstAvailableBed() {
-        for (Bed b : beds) {
-            if (!b.isOccupied()) {
-                return b;
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLS; c++) {
+                if (!beds[r][c].isOccupied()) {
+                    return beds[r][c];
+                }
             }
         }
+          
         return null;
     }
 
     private Bed findBedByNumber(int bedNumber) {
-        for (Bed b : beds) {
-            if (b.getBedNumber() == bedNumber) {
-                return b;
-            }
-        }
+        if (bedNumber < 1 || bedNumber > TOTAL_BEDS) {
         return null;
+    }
+        int index = bedNumber - 1;
+        int row = index/COLS;
+        int col = index%COLS;
+        return beds[row][col];
     }
 
     public boolean isWardFull() {
@@ -180,13 +190,12 @@ class WardManager {
 
     public void displayWardLayout() {
         System.out.println("--- Ward Layout (4x5) ---");
-        System.out.println("Legend: [Bed#:Empty] or [Bed#:P<PatientID>]");
         System.out.println();
         int bedIndex = 0;
         for (int r = 0; r < ROWS; r++) {
             StringBuilder rowLine = new StringBuilder();
             for (int c = 0; c < COLS; c++) {
-                Bed bed = beds.get(bedIndex);
+                Bed bed = beds[r][c];
                 String cell;
                 if (bed.isOccupied()) {
                     cell = String.format("[%02d:P%-4d]", bed.getBedNumber(), bed.getPatientId());
@@ -206,12 +215,15 @@ class WardManager {
     public void displayAvailableBeds() {
         System.out.println("--- Available Beds ---");
         boolean any = false;
-        for (Bed b : beds) {
-            if (!b.isOccupied()) {
-                System.out.println("Bed " + b.getBedNumber());
-                any = true;
+      for (int r = 0; r < ROWS; r++) {
+    for (int c = 0; c < COLS; c++) {
+        Bed b = beds[r][c];
+
+        if (!b.isOccupied()) {
+            System.out.println("Bed " + b.getBedNumber());
             }
         }
+      }
         if (!any) {
             System.out.println("No beds available.");
         } else {
@@ -222,7 +234,9 @@ class WardManager {
     public void displayOccupiedBeds() {
         System.out.println("--- Occupied Beds ---");
         boolean any = false;
-        for (Bed b : beds) {
+            for (int r = 0; r < ROWS; r++) {
+    for (int c = 0; c < COLS; c++) {
+        Bed b = beds[r][c];
             if (b.isOccupied()) {
                 System.out.println("Bed " + b.getBedNumber() + " -> Patient ID: " + b.getPatientId());
                 any = true;
@@ -234,15 +248,21 @@ class WardManager {
             System.out.println("Total occupied: " + countOccupied());
         }
     }
-
+    }
     private int countOccupied() {
         int count = 0;
-        for (Bed b : beds) {
-            if (b.isOccupied()) count++;
+           for (int r = 0; r < ROWS; r++) {
+    for (int c = 0; c < COLS; c++) {
+        
+            if (beds[r][c].isOccupied()) {
+                count++;
+            }
+            }
         }
         return count;
-    }
-
+    }    
+    
+    
     private int countAvailable() {
         return TOTAL_BEDS - countOccupied();
     }
