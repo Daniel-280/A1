@@ -1,13 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.mycompany.a1_4;
 
-/**
- *
- * @author User
- */
+
 class inpatient extends Patient {
     private static final int DEFAULT_WARD_NUMBER = 1; // the hospital currently has a single ward
  

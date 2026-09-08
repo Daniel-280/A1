@@ -33,9 +33,7 @@ public class report {
         System.out.println("=====================================================");
     }
  
-    /** Section: all registered patients. Uses polymorphism -- each patient
-     *  prints its own displayDetails(), so Inpatients automatically show
-     *  their ward/bed info without any special-casing here. */
+   
     private void printAllPatients() {
         System.out.println("--- All Registered Patients ---");
         if (patients.isEmpty()) {
@@ -47,7 +45,7 @@ public class report {
         }
     }
  
-    /** Section: totals and occupancy percentage. */
+    
     private void printSummaryStatistics() {
         System.out.println("--- Summary Statistics ---");
         System.out.println("Total registered patients: " + patients.size());
