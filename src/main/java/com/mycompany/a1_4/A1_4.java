@@ -1,7 +1,7 @@
 
 package com.mycompany.a1_4;
 
-
+//main
 import java.util.ArrayList;
 import java.util.Scanner;
 
