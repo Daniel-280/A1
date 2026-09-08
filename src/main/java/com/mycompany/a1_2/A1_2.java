@@ -1,18 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
 
 package com.mycompany.a1_2;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-
-/**
- *
- * @author User
- */
-
-
 
 public class A1_2 {
 
@@ -21,22 +11,30 @@ public class A1_2 {
         manager.run();
     }
 }
-
-
-
+enum PatientCategory {
+    INPATIENT, OUTPATIENT, EMERGENCY;
  
+   
+    @Override
+    public String toString() {
+        String n = name();
+        return n.charAt(0) + n.substring(1).toLowerCase();
+    }
+ 
+    }
+
 class Patient {
-    private int id;
+    
+    private final int id;
     private String firstName;
     private String lastName;
     private int age;
     private String gender;
     private String medicalCondition;
-    private String category; // Inpatient, Outpatient, or Emergency
-    private Integer bedNumber; // null if not assigned a bed
-
+    private final PatientCategory category;
+    
     public Patient(int id, String firstName, String lastName, int age,
-                   String gender, String medicalCondition, String category) {
+                   String gender, String medicalCondition ,PatientCategory category ) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -44,7 +42,6 @@ class Patient {
         this.gender = gender;
         this.medicalCondition = medicalCondition;
         this.category = category;
-        this.bedNumber = null;
     }
 
     // getr
@@ -54,8 +51,7 @@ class Patient {
     public int getAge() { return age; }
     public String getGender() { return gender; }
     public String getMedicalCondition() { return medicalCondition; }
-    public String getCategory() { return category; }
-    public Integer getBedNumber() { return bedNumber; }
+     public PatientCategory getCategory() { return category; }
 
     // setr
     public void setFirstName(String firstName) { this.firstName = firstName; }
@@ -63,20 +59,21 @@ class Patient {
     public void setAge(int age) { this.age = age; }
     public void setGender(String gender) { this.gender = gender; }
     public void setMedicalCondition(String medicalCondition) { this.medicalCondition = medicalCondition; }
-    public void setCategory(String category) { this.category = category; }
-    public void setBedNumber(Integer bedNumber) { this.bedNumber = bedNumber; }
 
-    //geeks for geeks: Overriding toString() Method in Java
-    //https://www.geeksforgeeks.org/java/overriding-tostring-method-in-java/
+    
+    
+ public String displayDetails() {
+        return "Patient ID: " + id
+                + " | Name: " + firstName + " " + lastName
+                + " | Age: " + age
+                + " | Gender: " + gender
+                + " | Condition: " + medicalCondition
+                + " | Category: " + category;
+    }
+ 
     @Override
     public String toString() {
-        String bedInfo = (bedNumber == null) ? "-" : String.valueOf(bedNumber);
-        return String.format(
-            "%-6d %-12s %-12s %-4d %-8s %-20s %-12s %-4s",
-                 // W3schools:java String format() Method
-                //https://www.w3schools.com/java/ref_string_format.asp
-            id, firstName, lastName, age, gender, medicalCondition, category, bedInfo
-        );
+        return displayDetails();
     }
 }
 
@@ -146,31 +143,38 @@ class WardManager {
 
     
     public int allocateBed(Patient patient) {
-        if (!patient.getCategory().equalsIgnoreCase("Inpatient")) {
+        if (patient instanceof inpatient) {
+        } else {
             return -1; // only inpatients can be allocated a bed
         }
-        if (patient.getBedNumber() != null) {
+        inpatient inpatient = (inpatient) patient;
+ 
+        if (inpatient.getBedNumber() != null) {
             return -2; // already has a bed
         }
         Bed bed = findFirstAvailableBed();
         if (bed == null) {
             return 0; // no beds available
         }
-        bed.occupy(patient.getId());
-        patient.setBedNumber(bed.getBedNumber());
+        bed.occupy(inpatient.getId());
+        inpatient.setBedNumber(bed.getBedNumber());
         return bed.getBedNumber();
     }
 
     // Releases the bed assigned to the given patient, if any. Returns true if a bed was released. 
     public boolean releaseBedForPatient(Patient patient) {
-        if (patient.getBedNumber() == null) {
+        if (!(patient instanceof inpatient)) {
             return false;
         }
-        Bed bed = findBedByNumber(patient.getBedNumber());
+        inpatient inpatient = (inpatient) patient;
+        if (inpatient.getBedNumber() == null) {
+            return false;
+        }
+        Bed bed = findBedByNumber(inpatient.getBedNumber());
         if (bed != null) {
             bed.release();
         }
-        patient.setBedNumber(null);
+        inpatient.setBedNumber(null);
         return true;
     }
 
@@ -253,9 +257,7 @@ class WardManager {
 }
 
 
-/**
- * Handles all patient record operations and links to ward/bed management.
- */
+
 class PatientManager {
     private final ArrayList<Patient> patients = new ArrayList<>();
     private final WardManager ward = new WardManager();
@@ -268,14 +270,6 @@ class PatientManager {
 
       // Helper methods
     //display
-    private void printTableHeader() {
-        System.out.printf("%-6s %-12s %-12s %-4s %-8s %-20s %-12s %-4s%n",
-                // W3schools:java String format() Method
-                //https://www.w3schools.com/java/ref_string_format.asp
-                "ID", "FirstName", "LastName", "Age", "Gender", "Condition", "Category", "Bed");
-        System.out.println("-".repeat(20));
-    }
-
     private Patient findPatientById(int id) {
         for (Patient p : patients) {
             if (p.getId() == id) {
@@ -284,26 +278,27 @@ class PatientManager {
         }
         return null;
     }
-
-    private String readType() {
+ 
+    private PatientCategory readCategory() {
         while (true) {
             System.out.print("Enter category (Inpatient/Outpatient/Emergency): ");
             String input = kb.nextLine().trim();
-            String normalized = normalizeType(input);
+            PatientCategory normalized = normalizeCategory(input);
             if (normalized != null) {
                 return normalized;
             }
             System.out.println("Invalid category. Please enter Inpatient, Outpatient, or Emergency.");
         }
     }
-
-    private String normalizeType(String input) {
-        if (input.equalsIgnoreCase("Inpatient")) return "Inpatient";
-        if (input.equalsIgnoreCase("Outpatient")) return "Outpatient";
-        if (input.equalsIgnoreCase("Emergency")) return "Emergency";
-        return null;
+ 
+    private PatientCategory normalizeCategory(String input) {
+        try {
+            return PatientCategory.valueOf(input.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
-
+ 
     private String readNonEmptyString(String prompt) {
         String value;
         while (true) {
@@ -315,7 +310,7 @@ class PatientManager {
             System.out.println("This field cannot be empty. Please try again.");
         }
     }
-
+ 
     private int readInt(String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -327,14 +322,15 @@ class PatientManager {
             }
         }
     }
-
+ 
     private int readPositiveInt(String prompt) {
         while (true) {
-            int value = readInt(prompt); 
+            int value = readInt(prompt);
             if (value > 0) {
                 return value;
             }
             System.out.println("Value must be greater than 0. Please try again.");
+        
         }
     }
     public void run() {
@@ -388,19 +384,26 @@ class PatientManager {
 
     //  Register a new patient
    
-    private void registerPatient() {
+  private void registerPatient() {
         System.out.println("--- Register New Patient ---");
-
+ 
         String firstName = readNonEmptyString("Enter first name: ");
         String lastName = readNonEmptyString("Enter last name: ");
         int age = readPositiveInt("Enter age: ");
         String gender = readNonEmptyString("Enter gender: ");
         String medicalCondition = readNonEmptyString("Enter medical condition: ");
-        String category = readType();
-
-        Patient patient = new Patient(nextId, firstName, lastName, age, gender, medicalCondition, category);
+        PatientCategory category = readCategory();
+ 
+        // Create the correct subclass based on the chosen category.
+        Patient patient;
+        switch (category) {
+            case INPATIENT -> patient = new inpatient(nextId, firstName, lastName, age, gender, medicalCondition, category);
+            case OUTPATIENT -> patient = new outPatient(nextId, firstName, lastName, age, gender, medicalCondition, category);
+            case EMERGENCY -> patient = new emergency(nextId, firstName, lastName, age, gender, medicalCondition, category);
+            default -> throw new IllegalStateException("Unexpected category: " + category);
+        }
+ 
         patients.add(patient);
-
         System.out.println("Patient registered successfully with ID: " + nextId);
         nextId++;
     }
@@ -417,8 +420,7 @@ class PatientManager {
             System.out.println("No patient found with ID: " + id);
         } else {
             System.out.println("Patient found:");
-            printTableHeader();
-            System.out.println(patient);
+           System.out.println(patient.displayDetails());
         }
     }
 
@@ -436,9 +438,9 @@ class PatientManager {
         }
 
         System.out.println("Current details:");
-        printTableHeader();
-        System.out.println(patient);
+        System.out.println(patient.displayDetails());
         System.out.println("Leave a field blank to keep the current value.");
+        System.out.println("Note: patient category cannot be changed after registration.");
 
         System.out.print("New first name [" + patient.getFirstName() + "]: ");
         String firstName = kb .nextLine().trim();
@@ -471,24 +473,10 @@ class PatientManager {
         String condition = kb .nextLine().trim();
         if (!condition.isEmpty()) patient.setMedicalCondition(condition);
 
-        System.out.print("New category (Inpatient/Outpatient/Emergency) [" + patient.getCategory() + "]: ");
-        String category = kb.nextLine().trim();
-        if (!category.isEmpty()) {
-            String normalized = normalizeType(category);
-            if (normalized != null) {
-                // If patient currently holds a bed but is being changed away from Inpatient
-                // automatically release the bed since only inpatients may occupy one
-                if (!normalized.equalsIgnoreCase("Inpatient") && patient.getBedNumber() != null) {
-                    ward.releaseBedForPatient(patient);
-                    System.out.println("Note: Bed released automatically since patient is no longer an Inpatient.");
-                }
-                patient.setCategory(normalized);
-            } else {
-                System.out.println("Invalid category entered. Keeping previous value.");
-            }
-        }
+                System.out.println("Patient details updated successfully.");
+        System.out.println("Updated details:");
+        System.out.println(patient.displayDetails());
 
-        System.out.println("Patient details updated successfully.");
     }
 
  
@@ -509,7 +497,7 @@ class PatientManager {
         String confirm = kb.nextLine().trim();
         if (confirm.equalsIgnoreCase("y")) {
             // Free up any bed the patient is occupying before removing the record.
-            if (patient.getBedNumber() != null) {
+            if (patient instanceof inpatient && ((inpatient) patient).getBedNumber() != null){
                 ward.releaseBedForPatient(patient);
                 System.out.println("Note: Patient's bed has been released.");
             }
@@ -529,7 +517,7 @@ class PatientManager {
             System.out.println("No patients registered yet.");
             return;
         }
-        printTableHeader();
+     
         for (Patient p : patients) {
             System.out.println(p);
         }
@@ -554,7 +542,7 @@ class PatientManager {
             return;
         }
 
-        if (!patient.getCategory().equalsIgnoreCase("Inpatient")) {
+          if (!(patient instanceof inpatient)) {
             System.out.println("Bed allocation failed: only Inpatients can be allocated a bed. "
                     + "This patient's category is: " + patient.getCategory());
             return;
@@ -562,7 +550,8 @@ class PatientManager {
 
         int result = ward.allocateBed(patient);
         if (result == -2) {
-            System.out.println("This patient already has bed number " + patient.getBedNumber() + " assigned.");
+            Integer bedNumber = ((inpatient) patient).getBedNumber();
+            System.out.println("This patient already has bed number " + bedNumber + " assigned.");
         } else if (result == 0) {
             System.out.println("Cannot allocate a bed: no beds available.");
         } else if (result > 0) {
@@ -586,12 +575,12 @@ class PatientManager {
             return;
         }
 
-        if (patient.getBedNumber() == null) {
+         if (!(patient instanceof inpatient) || ((inpatient) patient).getBedNumber() == null) {
             System.out.println("This patient does not currently occupy a bed.");
             return;
         }
 
-        int bedNumber = patient.getBedNumber();
+      int bedNumber = ((inpatient) patient).getBedNumber();
         boolean released = ward.releaseBedForPatient(patient);
         if (released) {
             System.out.println("Bed " + bedNumber + " has been released. Patient "
@@ -600,7 +589,8 @@ class PatientManager {
             System.out.println("Failed to release bed.");
         }
     }
+    }
 
    
   
-    }
+    

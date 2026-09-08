@@ -1,6 +1,11 @@
-com\mycompany\a1_2\Bed.class
 com\mycompany\a1_2\report.class
-com\mycompany\a1_2\WardManager.class
 com\mycompany\a1_2\A1_2.class
+com\mycompany\a1_2\outPatient.class
+com\mycompany\a1_2\PatientManager$1.class
+com\mycompany\a1_2\Bed.class
+com\mycompany\a1_2\emergency.class
+com\mycompany\a1_2\WardManager.class
+com\mycompany\a1_2\PatientCategory.class
 com\mycompany\a1_2\PatientManager.class
+com\mycompany\a1_2\inpatient.class
 com\mycompany\a1_2\Patient.class
